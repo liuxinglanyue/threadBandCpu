@@ -12,6 +12,7 @@
 如何使用？
 调用ThreadBandCpu.bandCpu并实现Runnable的run方法，第二个参数的意思是在第几个cpu上执行
 假如有4个cpu，那么就是 2%4 = 2，就是在第三个cpu上执行。
+当第二个参数为负数时，不绑定cpu，随系统调度到哪个cpu。
 
 可以通过查看top，得知。
 
