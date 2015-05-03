@@ -6,7 +6,7 @@
 #include <unistd.h>
 #include <pthread.h>
 #include <sched.h>
-#include <jni.h>
+#include "ThreadBandCpu.h"
 /* Header for class ThreadBandCpu */
 #ifdef __cplusplus
 extern "C" {
@@ -24,14 +24,16 @@ void *myfun(void *ptr)
     ThreadParams* p = reinterpret_cast<ThreadParams*>(ptr);
     JavaVM *jvm = p->jvm;
     jobject callback = p->callback;
-    int num = p->cpu % sysconf(_SC_NPROCESSORS_CONF);
+    int flag = p->cpu;
     free(p);
 
-    cpu_set_t mask;
-    CPU_ZERO(&mask);
-    CPU_SET(num, &mask);
-    if (pthread_setaffinity_np(pthread_self(), sizeof(mask), &mask) < 0) {
-        fprintf(stderr, "set thread affinity failed\n");
+    if(flag >= 0) {
+        cpu_set_t mask;
+        CPU_ZERO(&mask);
+        CPU_SET(flag % sysconf(_SC_NPROCESSORS_CONF), &mask);
+        if (pthread_setaffinity_np(pthread_self(), sizeof(mask), &mask) < 0) {
+            fprintf(stderr, "set thread affinity failed\n");
+        }
     }
 
     JNIEnv *env = NULL;
